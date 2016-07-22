@@ -34,13 +34,13 @@
  *
  *  You can test with
  *
- *  $ antlr4 Java.g4
+ *  $ antlr4 Java_Parser.g4
  *  $ javac *.java
- *  $ grun Java compilationUnit *.java
+ *  $ grun Java_Parser compilationUnit *.java
  */
-parser grammar Java_Parser;
+parser grammar JavaParser;
 
-options { tokenVocab=Java_Lexer; }
+options { tokenVocab=JavaLexer; }
 
 // starting point for parsing a java file
 compilationUnit
@@ -406,13 +406,9 @@ localVariableDeclaration
 statement
     :   block
     |   ASSERT expression (':' expression)? ';'
-    |   'if' parExpression statement ('else' statement)?
-    |   'for' '(' forControl ')' statement
-    |   'while' parExpression statement
-    |   'do' statement 'while' parExpression ';'
-    |   'try' block (catchClause+ finallyBlock? | finallyBlock)
-    |   'try' resourceSpecification block catchClause* finallyBlock?
-    |   'switch' parExpression '{' switchBlockStatementGroup* switchLabel* '}'
+    |   statementDecision               
+    |   statementLoop                              
+    |   statementTry                     
     |   'synchronized' parExpression block
     |   'return' expression? ';'
     |   'throw' expression ';'
@@ -423,6 +419,23 @@ statement
     |   Identifier ':' statement
     ;
 
+    
+statementDecision
+    :   'if' parExpression statement ('else' statement)?    
+    |   'switch' parExpression '{' switchBlockStatementGroup* switchLabel* '}'   
+    ;
+    
+statementTry
+    :   'try' block (catchClause+ finallyBlock? | finallyBlock)                             
+    |   'try' resourceSpecification block catchClause* finallyBlock?   
+    ;
+    
+statementLoop
+    :   'for' '(' forControl ')' statement                                                  
+    |   'while' parExpression statement                                                     
+    |   'do' statement 'while' parExpression ';'      
+    ;
+    
 catchClause
     :   'catch' '(' variableModifier* catchType Identifier ')' block
     ;
@@ -451,13 +464,13 @@ resource
  *  To handle empty cases at the end, we add switchLabel* to statement.
  */
 switchBlockStatementGroup
-    :   switchLabel+ blockStatement+
+    :   switchLabel+ blockStatement+                                                        
     ;
 
 switchLabel
-    :   'case' constantExpression ':'
-    |   'case' enumConstantName ':'
-    |   'default' ':'
+    :   'case' constantExpression ':'                                                     
+    |   'case' enumConstantName ':'                                                          
+    |   'default' ':'                                                                           
     ;
 
 forControl

@@ -1,4 +1,4 @@
-lexer grammar Java_Lexer;
+lexer grammar JavaLexer;
 // LEXER
 channels { WHITESPACE, COMMENTS }
 // §3.9 Keywords
